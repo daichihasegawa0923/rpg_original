@@ -10,16 +10,21 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float _speed = 0.1f;
 
+    private Vector3 _first_mouse_position;
     private Vector3 _spinMousePosition;
     private bool _isClick = false;
 
     [SerializeField] private GameObject _attack;
     private Vector3 _spin_save_position;
 
+    [SerializeField] private Vector3 gravity_d;
+    private Vector3 gravity;
+
     private void Awake()
     {
         _characon = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
+        _first_mouse_position = Input.mousePosition;
     }
 
     // Start is called before the first frame update
@@ -34,31 +39,39 @@ public class PlayerController : MonoBehaviour
         Control();
         Spin();
         Attack();
+        GravtiyAndJump();
     }
 
     private void Spin()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            _spinMousePosition = Input.mousePosition;
-            _isClick = true;
-        }
+        ////クリックでぐりぐり動かす
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    _spinMousePosition = Input.mousePosition;
+        //    _isClick = true;
+        //}
 
-        if (Input.GetMouseButton(0))
-        {
-            if (_isClick)
-            {
-                Vector3 spin = _spin_save_position;
-                spin.y = Input.mousePosition.x - _spinMousePosition.x;
+        //if (Input.GetMouseButton(0))
+        //{
+        //    if (_isClick)
+        //    {
+        //        Vector3 spin = _spin_save_position;
+        //        spin.y = _spin_save_position.y +Input.mousePosition.x - _spinMousePosition.x;
+        //        transform.eulerAngles = spin;
+        //    }
+        //}
+
+        //if (Input.GetMouseButtonUp(0))
+        //{
+        //    _isClick = false;
+        //    _spin_save_position = transform.eulerAngles;
+        //}
+
+        //クリックしないで視点回転
+                Vector3 spin = transform.eulerAngles;
+                spin.y = Input.mousePosition.x -_first_mouse_position.x;
                 transform.eulerAngles = spin;
-            }
-        }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            _isClick = false;
-            _spin_save_position = transform.eulerAngles;
-        }
     }
 
     private void Control()
@@ -93,5 +106,33 @@ public class PlayerController : MonoBehaviour
     {
         _animator.SetBool("smallattack", false);
         _attack.SetActive(false);
+    }
+
+    private void GravtiyAndJump()
+    {
+        if (!_characon.isGrounded)
+        {
+            _characon.Move(gravity);
+            gravity += gravity_d;
+        }
+        else
+        {
+            gravity = new Vector3(0,0,0);
+            if (Input.GetKey(KeyCode.S))
+            {
+                StartCoroutine("Jump");
+            }
+        }
+    }
+
+    IEnumerator Jump()
+    {
+        float jumpPower = 0.6f;
+        for (int i = 0; i < 10; i++)
+        {
+            _characon.Move(new Vector3(0, jumpPower, 0));
+            jumpPower *= 0.9f;
+            yield return new WaitForSeconds(0.01f);
+        }
     }
 }
