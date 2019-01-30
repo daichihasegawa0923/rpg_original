@@ -20,6 +20,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 gravity_d;
     private Vector3 gravity;
 
+    /// <summary>
+    /// 持っている武器
+    /// </summary>
+    [SerializeField] private Weapon _weapon;
+
     private void Awake()
     {
         _characon = GetComponent<CharacterController>();
@@ -94,11 +99,16 @@ public class PlayerController : MonoBehaviour
 
     private void Attack()
     {
-        if (Input.GetKey(KeyCode.A))
+        if (false)
+        {
+
+        }
+        else if (Input.GetKey(KeyCode.A))
         {
             _animator.SetBool("smallattack", true);
             _attack.SetActive(true);
             Invoke("AfterAttack", 0.5f);
+            _weapon.HandOn();
         }
     }
 
