@@ -11,5 +11,6 @@ public class Attack : MonoBehaviour
         {
             col.GetComponent<ICharacter>().Damaged();
         }
+        Debug.Log(col.gameObject.name);
     }
 }

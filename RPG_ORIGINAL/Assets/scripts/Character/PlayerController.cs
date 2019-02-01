@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float _speed = 0.1f;
 
+    private const string ATTACK_ANIMATION_NAME = "attack";
+
     private Vector3 _first_mouse_position;
     private Vector3 _spinMousePosition;
     private bool _isClick = false;
@@ -73,9 +75,17 @@ public class PlayerController : MonoBehaviour
         //}
 
         //クリックしないで視点回転
-                Vector3 spin = transform.eulerAngles;
-                spin.y = Input.mousePosition.x -_first_mouse_position.x;
-                transform.eulerAngles = spin;
+        Vector3 spin = transform.eulerAngles;
+        spin.y = Input.mousePosition.x -_first_mouse_position.x;
+        spin.x = -Input.mousePosition.y + _first_mouse_position.y;
+        if (spin.x > 30)
+        {
+            spin.x = 30;
+        }else if (spin.x < -30)
+        {
+            spin.x = -30;
+        }
+        transform.eulerAngles = spin;
 
     }
 
@@ -99,23 +109,21 @@ public class PlayerController : MonoBehaviour
 
     private void Attack()
     {
-        if (false)
+        if (Input.GetKeyDown(KeyCode.A))
         {
-
+            _animator.SetTrigger("attack");
         }
-        else if (Input.GetKey(KeyCode.A))
+        //状態によって、攻撃当たり判定をつけたり消したりする
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName(ATTACK_ANIMATION_NAME) && !_attack.activeInHierarchy)
         {
-            _animator.SetBool("smallattack", true);
             _attack.SetActive(true);
-            Invoke("AfterAttack", 0.5f);
             _weapon.HandOn();
         }
-    }
-
-    private void AfterAttack()
-    {
-        _animator.SetBool("smallattack", false);
-        _attack.SetActive(false);
+        else if(!_animator.GetCurrentAnimatorStateInfo(0).IsName(ATTACK_ANIMATION_NAME) && _attack.activeInHierarchy)
+        {
+            _attack.SetActive(false);
+            _weapon.HandOff();
+        }
     }
 
     private void GravtiyAndJump()
@@ -138,7 +146,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator Jump()
     {
         float jumpPower = 0.6f;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 100; i++)
         {
             _characon.Move(new Vector3(0, jumpPower, 0));
             jumpPower *= 0.9f;

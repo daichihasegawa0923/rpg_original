@@ -59,6 +59,6 @@ public class Weapon : MonoBehaviour
     {
         transform.parent = _origineParent.transform;
         transform.localPosition = _originPosition;
-        transform.localEulerAngles = _handedSpin;
+        transform.localEulerAngles = _origineSpin;
     }
 }
